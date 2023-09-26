@@ -33,7 +33,7 @@ def doc_classification(task_config,
                        embeds_dropout=0.1,
                        epochs=200,  # large because we use early stopping by default
                        batch_size=20,
-                       grad_acc_steps=1,
+                       grad_acc=1,
                        early_stopping_metric="roc_auc",
                        early_stopping_mode="max",
                        early_stopping_patience=10,
@@ -152,7 +152,7 @@ def doc_classification(task_config,
             n_batches=len(data_silo.loaders["train"]),
             n_epochs=epochs,
             use_amp=use_amp,
-            grad_acc_steps=grad_acc_steps,
+            grad_acc_steps=grad_acc,
             schedule_opts=schedule_opts)
 
         # 6. Create an early stopping instance
@@ -179,7 +179,7 @@ def doc_classification(task_config,
             evaluate_every=eval_every,
             early_stopping=early_stopping,
             device=device,
-            grad_acc_steps=grad_acc_steps,
+            grad_acc_steps=grad_acc,
             evaluator_test=do_eval
         )
 
