@@ -10,7 +10,8 @@ logger = utils.get_logger(__name__)
 
 def binary_classification_metrics(preds, probs, labels, multilabel):
     acc = simple_accuracy(preds, labels).get("acc")
-    roc_auc_score = roc_auc(probs=probs, labels=labels, multilabel=multilabel)
+    roc_auc_score_macro = roc_auc(probs=probs, labels=labels, multilabel=multilabel)
+    roc_auc_score_micro = roc_auc(probs=probs, labels=labels, multilabel=multilabel, average='micro')
     roc_auc_score_weighted = roc_auc(probs=probs, labels=labels, average="weighted", multilabel=multilabel)
     f1macro = f1_score(y_true=labels, y_pred=preds, average="macro")
     f1micro = f1_score(y_true=labels, y_pred=preds, average="micro")
@@ -23,7 +24,8 @@ def binary_classification_metrics(preds, probs, labels, multilabel):
         f1_0, f1_1, mcc = None, None, None
     return {
         "acc": acc,
-        "roc_auc": roc_auc_score,
+        "roc_auc_macro": roc_auc_score_macro,
+        "roc_auc_micro": roc_auc_score_micro,
         "roc_auc_weighted": roc_auc_score_weighted,
         "f1_macro": f1macro,
         "f1_micro": f1micro,
