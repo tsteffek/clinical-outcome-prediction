@@ -99,8 +99,8 @@ def doc_classification(task_config,
     #    few descriptive statistics of our datasets
     data_silo = DataSilo(
         processor=processor,
-        caching=True,
-        cache_path=Path(cache_dir),
+        caching=cache_dir is not None,
+        cache_path=Path(cache_dir) if cache_dir is not None else None,
         batch_size=batch_size)
 
     if do_train:

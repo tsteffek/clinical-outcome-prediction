@@ -10,9 +10,9 @@ from doc_classification import doc_classification
 
 def hpo_doc_classification(task_config,
                            model_name,
-                           cache_dir,
                            hpo_samples,
                            hpo_gpus,
+                           cache_dir=None,
                            run_name="0",
                            balance_classes=True,
                            check_balance_classes=True,
