@@ -1,4 +1,5 @@
 import argparse
+import re
 
 import pandas as pd
 import os
@@ -70,15 +71,14 @@ def filter_admission_text(notes_df) -> pd.DataFrame:
     }
 
     # replace linebreak indicators
-    notes_df['TEXT'] = notes_df['TEXT'].str.replace(r"\n", r"\\n")
+    # notes_df['TEXT'] = notes_df['TEXT'].str.replace(r"\n", r"\\n")
 
     # extract each section by regex
     for key in admission_sections.keys():
         section = admission_sections[key]
-        notes_df[key] = notes_df.TEXT.str.extract(r'(?i){}(.+?)\\n\\n[^(\\|\d|\.)]+?:'
-                                                  .format(section))
+        notes_df[key] = notes_df.TEXT.str.extract('{}([\\s\\S]+?)\n\\s*?\n[^(\\\\|\\d|\\.)]+?:'.format(section), flags=re.IGNORECASE)
 
-        notes_df[key] = notes_df[key].str.replace(r'\\n', r' ')
+        notes_df[key] = notes_df[key].str.replace('\n', r' ')
         notes_df[key] = notes_df[key].str.strip()
         notes_df[key] = notes_df[key].fillna("")
         notes_df[notes_df[key].str.startswith("[]")][key] = ""
