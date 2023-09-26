@@ -1,18 +1,18 @@
-FROM pytorch/pytorch:1.4-cuda10.1-cudnn7-devel
+FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-devel
 
 ENV PYTHONIOENCODING=utf-8
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 
-RUN pip install farm
-RUN pip install ray[tune]
-RUN pip install hyperopt
-RUN pip install fire
-RUN pip install dotmap==1.3.0
+WORKDIR /experiments/
+COPY requirements.txt .
 
-COPY configs/ /experiments/configs/
-COPY custom_models/ /experiments/custom_models/
+RUN pip install --no-cache -r requirements.txt
 
-COPY utils.py /experiments/
-COPY doc_classification.py /experiments/
-COPY hpo_doc_classification.py /experiments/
-COPY outcome_pretraining.py /experiments/
-COPY metrics.py /experiments/
+COPY configs/ ./configs/
+COPY custom_models/ ./custom_models/
+
+COPY utils.py .
+COPY doc_classification.py .
+COPY hpo_doc_classification.py .
+COPY outcome_pretraining.py .
+COPY metrics.py .

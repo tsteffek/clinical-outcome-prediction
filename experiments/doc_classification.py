@@ -58,7 +58,7 @@ def doc_classification(task_config,
     save_dir = utils.init_save_dir(task_config["output_dir"],
                                    task_config["experiment_name"],
                                    run_name,
-                                   tune.session.get_trial_name() if do_hpo else None)
+                                   tune.get_trial_name() if do_hpo else None)
 
     # Create label list from args list or (for large label lists) create from file by splitting by space
     if isinstance(task_config["data"]["label_list"], list):

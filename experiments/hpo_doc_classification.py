@@ -2,7 +2,7 @@ import os
 
 from hyperopt import hp
 from ray import tune
-from ray.tune.suggest.hyperopt import HyperOptSearch
+from ray.tune.search.hyperopt import HyperOptSearch
 import yaml
 import fire
 from doc_classification import doc_classification

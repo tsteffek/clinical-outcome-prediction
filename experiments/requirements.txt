@@ -1,0 +1,9 @@
+--extra-index-url https://download.pytorch.org/whl/lts/1.8/cu111
+torch==1.8.1
+farm==0.8.0
+ray[tune]==2.6.3
+hyperopt==0.2.7
+fire==0.5.0
+mlflow
+numpy<1.27.0,>= 1.20.3
+protobuf<3.21.0
