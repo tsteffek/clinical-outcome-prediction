@@ -23,7 +23,7 @@ def pro_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
 
     # load dataframes
     mimic_procedures = pd.read_csv(
-        os.path.join(mimic_dir, "PROCEDURES_ICD.csv"))
+        os.path.join(mimic_dir, "PROCEDURES_ICD.csv"), dtype={"ICD9_CODE": str})
     mimic_notes = pd.read_csv(os.path.join(mimic_dir, "NOTEEVENTS.csv"))
     mimic_admissions = pd.read_csv(os.path.join(mimic_dir, "ADMISSIONS.csv"))
 
@@ -39,13 +39,12 @@ def pro_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
         how='any', subset=['ICD9_CODE'], axis=0)
 
     # convert data type of ICD9_CODE from integer to string
-    mimic_procedures.ICD9_CODE = mimic_procedures.ICD9_CODE.astype(str)
+    # mimic_procedures.ICD9_CODE = mimic_procedures.ICD9_CODE.astype(str)
 
     # create column SHORT_CODE including first 2 digits of ICD9 code
-    mimic_procedures["SHORT_CODE"] = mimic_procedures.ICD9_CODE.astype(
-        str).str[:3]
+    mimic_procedures["SHORT_CODE"] = mimic_procedures.ICD9_CODE.str[:3]
 
-    icd9_codes = mimic_procedures.SHORT_CODE.unique().tolist()
+    # icd9_codes = mimic_procedures.SHORT_CODE.unique().tolist()
 
     # remove duplicated code groups per admission
     mimic_procedures = mimic_procedures.drop_duplicates(
@@ -61,6 +60,12 @@ def pro_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
     notes_procedures_df = pd.merge(
         grouped_codes[['HADM_ID', 'SHORT_CODES']], mimic_notes, how='inner', on='HADM_ID')
 
+    all_tokens = set()
+    for i, row in notes_procedures_df.iterrows():
+        for token in row.SHORT_CODES.split(","):
+            all_tokens.add(token)
+
+
     mimic_utils.save_mimic_split_patient_wise(notes_procedures_df,
                                               label_column='SHORT_CODES',
                                               save_dir=save_dir,
@@ -68,7 +73,7 @@ def pro_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
                                               seed=seed)
 
     # save file with all occuring codes
-    write_icd_codes_to_file(icd9_codes, save_dir)
+    write_icd_codes_to_file(sorted(all_tokens), save_dir)
 
 
 def write_icd_codes_to_file(icd_codes: List[str], data_path):

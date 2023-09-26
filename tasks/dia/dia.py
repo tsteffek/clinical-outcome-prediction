@@ -23,7 +23,7 @@ def dia_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
         task_name = f"{task_name}_adm"
 
     # load dataframes
-    mimic_diagnoses = pd.read_csv(os.path.join(mimic_dir, "DIAGNOSES_ICD.csv"))
+    mimic_diagnoses = pd.read_csv(os.path.join(mimic_dir, "DIAGNOSES_ICD.csv"), dtype={"ICD9_CODE": str})
     mimic_notes = pd.read_csv(os.path.join(mimic_dir, "NOTEEVENTS.csv"))
     mimic_admissions = pd.read_csv(os.path.join(mimic_dir, "ADMISSIONS.csv"))
 
@@ -56,7 +56,7 @@ def dia_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
         ["HADM_ID", "SHORT_CODE"])
 
     # store all ICD codes for vectorization
-    icd9_codes = mimic_diagnoses.SHORT_CODE.unique().tolist()
+    # icd9_codes = mimic_diagnoses.SHORT_CODE.unique().tolist()
 
     grouped_codes = mimic_diagnoses.groupby(['HADM_ID', 'SUBJECT_ID'])['SHORT_CODE'].apply(
         lambda d: ",".join(d.astype(str))).reset_index()
@@ -68,6 +68,11 @@ def dia_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
     notes_diagnoses_df = pd.merge(
         grouped_codes[['HADM_ID', 'SHORT_CODES']], mimic_notes, how='inner', on='HADM_ID')
 
+    all_tokens = set()
+    for i, row in notes_diagnoses_df.iterrows():
+        for token in row.SHORT_CODES.split(","):
+            all_tokens.add(token)
+
     mimic_utils.save_mimic_split_patient_wise(notes_diagnoses_df,
                                               label_column='SHORT_CODES',
                                               save_dir=save_dir,
@@ -75,7 +80,7 @@ def dia_groups_3_digits_mimic(mimic_dir: str, save_dir: int, seed: int, admissio
                                               seed=seed)
 
     # save file with all occuring codes
-    write_icd_codes_to_file(icd9_codes, save_dir)
+    write_icd_codes_to_file(sorted(all_tokens), save_dir)
 
 
 def write_icd_codes_to_file(icd_codes: List[str], data_path):
